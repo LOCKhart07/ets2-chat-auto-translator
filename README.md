@@ -1,0 +1,1 @@
+# ets2-chat-auto-translator

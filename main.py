@@ -22,21 +22,15 @@ def tail(filename):
         last_line = file.readline().decode()
         return last_line
 
-now = datetime.now()
-# chatLogPath = os.path.expanduser('~\Documents') + "\ETS2MP\logs" + "\chat_" + now.strftime("%Y_%m_%d") + "_log.txt"
-chatLogPath = r'C:\Users\LOCKhart\Documents\ETS2MP\logs\chat_2022_08_12_log.txt'
 
-cache_last_line = 'Connection established!'
-tmpID = r"^.+\(.*\): "
+def translateMessage():
+    now = datetime.now()
+    chatLogPath = os.path.expanduser('~\Documents') + "\ETS2MP\logs" + "\chat_" + now.strftime("%Y_%m_%d") + "_log.txt"
+    # chatLogPath = r'C:\Users\LOCKhart\Documents\ETS2MP\logs\chat_2022_08_12_log.txt'
 
-# check if log file exists
-try:
-    tail(chatLogPath)
-except:
-    print("No log file found")
-    exit()
+    cache_last_line = 'Connection established!'
+    tmpID = r"^.+\(.*\): "
 
-while(True):
     last_line = tail(chatLogPath)
     if last_line != cache_last_line:
         try:
@@ -49,8 +43,29 @@ while(True):
             response = webhook.execute()
             print(translated)
             cache_last_line = last_line
+            return translated
+
         except:
             print('!!!!!!!!!!!!!!!     ' + last_line)
             cache_last_line = last_line
+            
 
 
+
+def main():
+    
+
+    # check if log file exists
+    try:
+        tail(chatLogPath)
+    except:
+        print("No log file found")
+        exit()
+
+    while(True):
+        translateMessage()
+        
+
+
+if __name__ == "__main__":
+    main()

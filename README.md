@@ -7,5 +7,3 @@
 WEBHOOK_URL = <discord webhook url goes here>
  ```
 * run main.py
-
-ignore

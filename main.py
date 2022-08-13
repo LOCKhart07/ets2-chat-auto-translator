@@ -1,9 +1,11 @@
+from ast import expr_context
 import os
 from datetime import datetime
 from fileinput import filename
 import time
 from googletrans import Translator
 import re
+import pickle
 
 from discord import Discord
 # print(webhookURL)
@@ -45,6 +47,11 @@ class Ets():
         # print(last_line)
         # print(self.cache_last_line)
         tmpID = r"^.+\(.*\): "
+        try:
+            with open('cache_last_line.pkl', 'rb') as file:
+                self.cache_last_line = pickle.load(file)
+        except:
+            print("No pickle file/ Running for the first time")
         if last_line != self.cache_last_line:
             try:
                 spliStri = re.search(tmpID, last_line)
@@ -58,6 +65,8 @@ class Ets():
                 if sendToDiscord:
                     self.discord.send_message(translated)
                 self.cache_last_line = last_line
+                with open('cache_last_line.pkl', 'wb') as file:
+                    pickle.dump(self.cache_last_line, file)
                 return translated
 
             except Exception as e:

@@ -2,12 +2,10 @@ import os
 from datetime import datetime
 from fileinput import filename
 import time
-from discord_webhook import DiscordWebhook
 from googletrans import Translator
 import re
-from dotenv import load_dotenv
-load_dotenv()
-webhookURL = os.getenv('WEBHOOK_URL')
+
+from discord import Discord
 # print(webhookURL)
 translator = Translator()
 
@@ -19,6 +17,7 @@ class Ets():
             '~\Documents') + "\ETS2MP\logs" + "\chat_" + self.now.strftime("%Y_%m_%d") + "_log.txt"
         # self.chatLogPath = r'C:\Users\LOCKhart\Documents\ETS2MP\logs\chat_2022_08_13_log.txt'
         self.cache_last_line = 'Connection established!'
+        self.discord = Discord()
 
     def tail(self):
         filename = self.chatLogPath
@@ -32,7 +31,7 @@ class Ets():
             last_line = file.readline().decode()
             return last_line
 
-    def translateMessage(self):
+    def translateMessage(self, sendToDiscord = False):
         last_line = self.tail()
         # print(last_line)
         # print(self.cache_last_line)
@@ -44,17 +43,19 @@ class Ets():
                 sequel = last_line.split(spliStri.group())
                 translated = str(
                     prequel) + str(translator.translate(sequel[1], dest='en').text)
-                webhook = DiscordWebhook(url=webhookURL,
-                                         content=translated)
-                response = webhook.execute()
-
+                # Remove timestamp
+                translated = translated[11:]
                 print(translated)
+                if sendToDiscord:
+                    self.discord.send_message(translated)
                 self.cache_last_line = last_line
                 return translated
 
             except Exception as e:
                 print(e)
-                print('!!!!!!!!!!!!!!!     ' + last_line)
+                if sendToDiscord:
+                    self.discord.send_message(last_line[11:])
+                print(last_line[11:])
                 self.cache_last_line = last_line
                 return '!!!!!!!!!!!!!!!     ' + last_line
 
@@ -69,7 +70,7 @@ def main():
         exit()
 
     while (True):
-        ets.translateMessage()
+        ets.translateMessage(True)
 
 
 if __name__ == "__main__":

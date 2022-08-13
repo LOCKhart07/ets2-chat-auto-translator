@@ -12,15 +12,24 @@ translator = Translator()
 
 class Ets():
     def __init__(self):
-        self.now = datetime.now()
-        self.chatLogPath = os.path.expanduser(
-            '~\Documents') + "\ETS2MP\logs" + "\chat_" + self.now.strftime("%Y_%m_%d") + "_log.txt"
+        # self.now = datetime.now()
+        # self.chatLogPath = os.path.expanduser(
+        #     '~\Documents') + "\ETS2MP\logs" + "\chat_" + self.now.strftime("%Y_%m_%d") + "_log.txt"
+
+        # Get latest chat log file
+        try:
+            logsPath = os.path.expanduser('~\Documents') + "\ETS2MP\logs"
+            chatLogFiles = [os.path.join(logsPath, x) for x in os.listdir(logsPath) if x.endswith(".txt") and x.startswith("chat_")]
+            self.newestChatLogFile = max(chatLogFiles , key = os.path.getctime)
+            print(self.newestChatLogFile)
+        except:
+            print("No chat log files found")
         # self.chatLogPath = r'C:\Users\LOCKhart\Documents\ETS2MP\logs\chat_2022_08_13_log.txt'
         self.cache_last_line = 'Connection established!'
         self.discord = Discord()
 
     def tail(self):
-        filename = self.chatLogPath
+        filename = self.newestChatLogFile
         with open(filename, "rb") as file:
             try:
                 file.seek(-2, os.SEEK_END)

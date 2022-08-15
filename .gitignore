@@ -1,5 +1,6 @@
 .env
 __pycache__/*
+**/__pycache__/*
 trying slice.py
 file.pkl
 cache_last_line.pkl

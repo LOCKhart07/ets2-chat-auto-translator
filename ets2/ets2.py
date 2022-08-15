@@ -1,4 +1,5 @@
 from ast import expr_context
+from cgi import print_arguments
 import os
 from datetime import datetime
 from fileinput import filename
@@ -44,7 +45,7 @@ class Ets():
             last_line = file.readline().decode()
             return last_line
 
-    def translateMessage(self, sendToDiscord=False):
+    def translateMessage(self, sendToDiscord=True):
         last_line = self.tail()
         tmpID = r"^.+\(.*\): "
         try:
@@ -67,10 +68,14 @@ class Ets():
 
             except Exception as e:
                 print(e)
+                # print("ulala")
+                # print(last_line[11:])
                 if sendToDiscord:
                     self.discord.send_message(last_line[11:])
                 print(last_line[11:])
                 self.cache_last_line = last_line
+                with open('cache_last_line.pkl', 'wb') as file:
+                    pickle.dump(self.cache_last_line, file)
                 return '!!!!!!!!!!!!!!!     ' + last_line
 
         return "No new chat message"

@@ -10,7 +10,7 @@ def main():
         exit()
 
     while (True):
-        ets.translateMessage(False)
+        ets.translateMessage(True)
 
 
 if __name__ == "__main__":

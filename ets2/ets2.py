@@ -16,10 +16,6 @@ translator = Translator()
 
 class Ets():
     def __init__(self):
-        # self.now = datetime.now()
-        # self.chatLogPath = os.path.expanduser(
-        #     '~\Documents') + "\ETS2MP\logs" + "\chat_" + self.now.strftime("%Y_%m_%d") + "_log.txt"
-
         # Get latest chat log file
         try:
             logsPath = os.path.expanduser('~\Documents') + "\ETS2MP\logs"
@@ -67,9 +63,7 @@ class Ets():
                 return translated
 
             except Exception as e:
-                print(e)
-                # print("ulala")
-                # print(last_line[11:])
+                print("exception :",e)
                 if sendToDiscord:
                     self.discord.send_message(last_line[11:])
                 print(last_line[11:])

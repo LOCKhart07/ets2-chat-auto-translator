@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>portfolio card · ETS2 Chat Translator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* asphalt + headlight-amber: a night-drive trucking palette */
+    --brand:   #232a39;   /* panel base (asphalt slate)        */
+    --brand-2: #181d28;   /* mid gradient stop                 */
+    --brand-3: #0f131b;   /* deep gradient stop                */
+    --cream:   #F4EEE3;   /* panel text / high-contrast on brand */
+    --accent:  #F5A524;   /* headlight amber (rule + highlights) */
+    /* Discord product frame */
+    --dc-bg:   #313338;  --dc-head: #2b2d31;  --dc-edge: #1e1f22;
+    --ink:     #f2f3f5;  --txt: #dbdee1;
+    --muted: #949ba4;    --faint: #6d7178;
+    --divider: rgba(255,255,255,.06); --blurple: #5865F2; --pos: #3ba55c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #0b0b0c; }
+  body { display: grid; place-items: center; min-height: 100vh; padding: 40px;
+    font-family: 'Inter', system-ui, sans-serif; }
+  .hint { position: fixed; top: 14px; left: 16px; font-size: 12px;
+    color: rgba(255,255,255,.34); font-family: 'JetBrains Mono', monospace; }
+  body.bare { padding: 0; display: block; min-height: 0; }
+  body.bare .hint { display: none; }
+  body.bare #card { border-radius: 0; }
+
+  #card {
+    width: 1600px; height: 740px; overflow: hidden; position: relative;
+    border-radius: 20px;
+    background:
+      radial-gradient(900px 620px at 20% 26%, color-mix(in srgb, var(--brand) 64%, #fff) 0%, transparent 60%),
+      linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 46%, var(--brand-3) 100%);
+    display: flex; align-items: stretch;
+  }
+  #card::after { content: ""; position: absolute; inset: 0; opacity: .05;
+    mix-blend-mode: overlay;
+    background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0);
+    background-size: 5px 5px; }
+  /* faint lane-marking texture, evokes a highway at night */
+  .lane { position: absolute; left: -60px; bottom: 64px; width: 760px; height: 10px;
+    transform: rotate(-8deg); z-index: 1; opacity: .14;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 54px, transparent 54px 104px);
+    border-radius: 6px; filter: blur(.3px); }
+
+  /* ---- LEFT: brand panel ---- */
+  .brand { flex: 1; padding: 88px 64px 88px 92px; position: relative; z-index: 2;
+    display: flex; flex-direction: column; justify-content: center; gap: 24px; }
+  .kicker { font-size: 13.5px; letter-spacing: .34em; font-weight: 700;
+    color: color-mix(in srgb, var(--cream) 50%, transparent); text-transform: uppercase; }
+  .lockup { display: flex; flex-direction: column; align-items: flex-start; gap: 26px; }
+  .icon { width: 116px; height: 116px; border-radius: 28px; flex-shrink: 0;
+    overflow: hidden; background: transparent;
+    box-shadow: 0 20px 44px rgba(0,0,0,.46), 0 0 0 1px rgba(255,255,255,.08) inset; }
+  .icon svg { width: 100%; height: 100%; display: block; }
+  .wordmark { font-size: 66px; font-weight: 800; color: var(--cream);
+    letter-spacing: -2px; line-height: 1; white-space: nowrap; }
+  .wordmark .lite { font-weight: 600; color: color-mix(in srgb, var(--cream) 78%, transparent); }
+  .rule { width: 60px; height: 4px; border-radius: 2px; background: var(--accent); }
+  .tag { font-size: 31px; font-weight: 700; color: var(--cream);
+    line-height: 1.3; max-width: 560px; }
+  .tag .soft { color: color-mix(in srgb, var(--cream) 60%, transparent); font-weight: 500; }
+  .sub { font-size: 16px; font-weight: 500; max-width: 560px; line-height: 1.55;
+    color: color-mix(in srgb, var(--cream) 54%, transparent); }
+
+  /* ---- RIGHT: Discord channel frame ---- */
+  .stage { width: 600px; position: relative; z-index: 2; }
+  .glow { position: absolute; width: 480px; height: 480px; border-radius: 50%;
+    top: 50%; left: 47%; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 17%, transparent) 0%, transparent 68%); }
+  .win { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 528px; background: var(--dc-bg); border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.06);
+    box-shadow: 0 50px 100px rgba(0,0,0,.58), 0 0 0 1px rgba(0,0,0,.4); }
+
+  .head { display: flex; align-items: center; gap: 11px;
+    padding: 16px 20px; background: var(--dc-head);
+    border-bottom: 1px solid var(--dc-edge); }
+  .hash { font-size: 22px; font-weight: 700; color: var(--faint); line-height: 1; }
+  .chan { font-size: 16px; font-weight: 700; color: var(--ink); }
+  .topic { font-size: 12.5px; color: var(--muted); font-weight: 500;
+    padding-left: 12px; margin-left: 4px; border-left: 1px solid var(--divider); }
+  .live { margin-left: auto; display: flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    padding: 5px 11px; border-radius: 999px; }
+  .live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
+
+  .body { padding: 22px 22px 20px; }
+
+  /* HERO message — the one element that must stay legible at thumbnail scale */
+  .msg { display: flex; gap: 15px; }
+  .av { width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4); }
+  .av svg { width: 100%; height: 100%; display: block; }
+  .col { flex: 1; min-width: 0; }
+  .mh { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+  .who { font-size: 15.5px; font-weight: 700; color: #f0b252; }
+  .bot { font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #fff;
+    background: var(--blurple); padding: 2px 6px 3px; border-radius: 4px; line-height: 1; }
+  .ts { font-size: 12px; color: var(--faint); font-weight: 500; }
+  .tags { display: flex; gap: 8px; align-items: center; margin-bottom: 9px; }
+  .lang { font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    padding: 3px 8px; border-radius: 5px; font-family: 'JetBrains Mono', monospace; }
+  .hero { font-size: 30px; font-weight: 700; color: var(--ink);
+    line-height: 1.26; letter-spacing: -.4px; }
+  .orig { font-size: 13px; color: var(--muted); margin-top: 11px; line-height: 1.4; }
+  .orig i { color: var(--txt); font-style: italic; }
+
+  .sep { display: flex; align-items: center; gap: 12px; margin: 20px 0 6px; }
+  .sep::before, .sep::after { content: ""; flex: 1; height: 1px; background: var(--divider); }
+  .sep span { font-size: 10.5px; font-weight: 700; letter-spacing: .16em;
+    color: var(--faint); text-transform: uppercase; }
+
+  /* texture rows — realism, not meant to be read at card scale */
+  .row { display: flex; gap: 12px; padding: 9px 0; align-items: flex-start; }
+  .ra { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #fff; }
+  .rc { flex: 1; min-width: 0; }
+  .rh { display: flex; align-items: baseline; gap: 8px; }
+  .rn { font-size: 13px; font-weight: 700; color: var(--txt); }
+  .rl { font-size: 9.5px; font-weight: 800; color: var(--faint);
+    font-family: 'JetBrains Mono', monospace; }
+  .rt { font-size: 12px; color: var(--faint); margin-left: auto; font-weight: 500; }
+  .rm { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.35;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .ft { display: flex; align-items: center; gap: 8px; margin-top: 16px;
+    padding-top: 14px; border-top: 1px solid var(--divider);
+    font-size: 11px; color: var(--faint); font-weight: 500; }
+  .ft svg { width: 13px; height: 13px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+  <div class="hint">portfolio card · 1600×740. Open with #bare for the exact-crop export.</div>
+  <script>if (location.hash === '#bare') document.body.classList.add('bare');</script>
+
+  <div id="card">
+    <div class="lane"></div>
+
+    <!-- LEFT: brand panel -->
+    <div class="brand">
+      <div class="kicker">Euro Truck Simulator 2 MP · Discord Bridge</div>
+      <div class="lockup">
+        <span class="icon">
+          <svg viewBox="0 0 124 124" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FBC862"/>
+                <stop offset=".55" stop-color="#F5A524"/>
+                <stop offset="1" stop-color="#DE7C0A"/>
+              </linearGradient>
+            </defs>
+            <rect width="124" height="124" rx="30" fill="url(#g)"/>
+            <rect x="20" y="26" width="84" height="52" rx="15" fill="#fff"/>
+            <polygon points="44,76 44,96 65,76" fill="#fff"/>
+            <g stroke="#DE7C0A" stroke-width="3.2" fill="none" stroke-linecap="round">
+              <circle cx="62" cy="52" r="17"/>
+              <ellipse cx="62" cy="52" rx="7" ry="17"/>
+              <line x1="46" y1="46" x2="78" y2="46"/>
+              <line x1="45" y1="59" x2="79" y2="59"/>
+            </g>
+          </svg>
+        </span>
+        <span class="wordmark">ETS2 <span class="lite">Chat Translator</span></span>
+      </div>
+      <div class="rule"></div>
+      <div class="tag">Foreign chat, instantly in English.<br />
+        <span class="soft">No language barrier on the road.</span></div>
+      <div class="sub">Tails the ETS2 Multiplayer chat log, auto-detects the language, and posts a clean English translation straight to your Discord in real time.</div>
+    </div>
+
+    <!-- RIGHT: Discord channel frame -->
+    <div class="stage">
+      <div class="glow"></div>
+      <div class="win">
+        <div class="head">
+          <span class="hash">#</span>
+          <span class="chan">ets2-mp-chat</span>
+          <span class="topic">Auto-translated in-game chat</span>
+          <span class="live"><span class="dot"></span>LIVE</span>
+        </div>
+
+        <div class="body">
+          <!-- HERO -->
+          <div class="msg">
+            <span class="av">
+              <svg viewBox="0 0 124 124" xmlns="http://www.w3.org/2000/svg">
+                <rect width="124" height="124" fill="#F5A524"/>
+                <rect x="24" y="32" width="76" height="46" rx="13" fill="#fff"/>
+                <polygon points="44,74 44,92 64,74" fill="#fff"/>
+                <g stroke="#DE7C0A" stroke-width="4" fill="none" stroke-linecap="round">
+                  <circle cx="62" cy="55" r="15"/>
+                  <ellipse cx="62" cy="55" rx="6" ry="15"/>
+                  <line x1="48" y1="49" x2="76" y2="49"/>
+                  <line x1="47" y1="61" x2="77" y2="61"/>
+                </g>
+              </svg>
+            </span>
+            <div class="col">
+              <div class="mh">
+                <span class="who">ETS2 Translator</span>
+                <span class="bot">BOT</span>
+                <span class="ts">Today at 21:47</span>
+              </div>
+              <div class="tags">
+                <span class="lang">ES &rarr; EN</span>
+              </div>
+              <div class="hero">Mateo (48213): Watch out, accident on the bridge ahead!</div>
+              <div class="orig">original &middot; <i>&ldquo;&iexcl;Cuidado, accidente en el puente!&rdquo;</i></div>
+            </div>
+          </div>
+
+          <div class="sep"><span>earlier today</span></div>
+
+          <!-- texture rows -->
+          <div class="row">
+            <span class="ra" style="background:#5865F2">L</span>
+            <div class="rc">
+              <div class="rh"><span class="rn">ETS2 Translator</span><span class="rl">DE &rarr; EN</span><span class="rt">21:39</span></div>
+              <div class="rm">Lukas (10277): Anyone up for a convoy to Rotterdam? Leaving in 5.</div>
+            </div>
+          </div>
+          <div class="row">
+            <span class="ra" style="background:#3ba55c">H</span>
+            <div class="rc">
+              <div class="rh"><span class="rn">ETS2 Translator</span><span class="rl">NO &rarr; EN</span><span class="rt">21:34</span></div>
+              <div class="rm">Henrik (33910): Thanks for the help back there, mate!</div>
+            </div>
+          </div>
+          <div class="row">
+            <span class="ra" style="background:#e0699c">P</span>
+            <div class="rc">
+              <div class="rh"><span class="rn">ETS2 Translator</span><span class="rl">PL &rarr; EN</span><span class="rt">21:28</span></div>
+              <div class="rm">Piotr (52640): Heavy traffic at the Calais ferry, take the tunnel.</div>
+            </div>
+          </div>
+
+          <div class="ft">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6d7178" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+            Auto-detects the source language &middot; delivered by Discord webhook &middot; runs headless in the background
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
